@@ -15,9 +15,9 @@ type ZeroconfDiscoverer struct {
 	filter Filter
 	logger *slog.Logger
 
-	mu sync.Mutex
+	mu     sync.Mutex
 	cancel context.CancelFunc
-	done chan struct{}
+	done   chan struct{}
 }
 
 func NewZeroconfDiscoverer(filter Filter, logger *slog.Logger) *ZeroconfDiscoverer {
