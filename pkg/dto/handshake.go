@@ -12,6 +12,14 @@ const (
 	FormatMsgpack Format = "msgpack"
 )
 
+func (f Format) Valid() bool {
+	switch f {
+	case FormatJSON, FormatMsgpack:
+		return true
+	}
+	return false
+}
+
 type Handshake struct {
 	Protocol  string `json:"protocol"`
 	Version   string `json:"version"`

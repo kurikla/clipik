@@ -17,6 +17,9 @@ import (
 )
 
 const (
+	defaultHandshakeTimeout = 7 * time.Second
+	defaultLogPrefix = "clipik-s"
+	defaultSizeLimit int64 = 64 * 1024 * 1024
 	defaultShutdownTimeout = 7 * time.Second
 	defaultTrimInterval = 7 * time.Second
 	defaultTrimLimit = 3000
@@ -45,8 +48,6 @@ type Server struct {
 	http	 *http.Server
 
 	sessions       *sessionStore
-	store		   Store
-	discoverer     Discoverer
 	allowedFormats map[dto.Format]bool
 
 	mdnsOn   bool
@@ -86,12 +87,24 @@ func New(cfg *Config) (*Server, error) {
 		return nil, fmt.Errorf("server: invalid log level %q", cfg.LogLevel)
 	}
 
-	if cfg.SizeLimit <= 0 {
-		return nil, errors.New("serer: SizeLimit must be positive")
+	if cfg.LogPrefix == "" {
+		cfg.LogPrefix = defaultLogPrefix
 	}
 
-	if cfg.HandshakeTimeout <= 0 {
-		return nil, errors.New("server: HandshakeTimeout must be positive")
+	if cfg.SizeLimit == 0 {
+		cfg.SizeLimit = defaultSizeLimit
+	}
+
+	if cfg.SizeLimit <= 0 {
+		return nil, errors.New("server: SizeLimit must be positive")
+	}
+
+	if cfg.HandshakeTimeout == 0 {
+		cfg.HandshakeTimeout = defaultHandshakeTimeout
+	}
+
+	if cfg.HandshakeTimeout < 0 {
+		return nil, errors.New("server: HandshakeTimeout must be >= 0")
 	}
 
 	if cfg.TrimInterval == 0 {
@@ -130,8 +143,6 @@ func New(cfg *Config) (*Server, error) {
 		identity:   identity,
 		logger:     lg,
 		sessions:   newSessionStore(),
-		store:      cfg.Store,
-		discoverer: cfg.Discoverer,
 		allowedFormats: map[dto.Format]bool{
 			dto.FormatJSON: true,
 			dto.FormatMsgpack: true,
@@ -183,7 +194,7 @@ func (s *Server) Start() error {
 		gcCancel()
 		<-s.gcDone
 		if s.mdnsOn {
-			_ = s.discoverer.Unregister()
+			_ = s.cfg.Discoverer.Unregister()
 			s.mdnsOn = false
 		}
 		return err
@@ -200,7 +211,7 @@ func (s *Server) StopWithTimeout(timeout time.Duration) error {
 	s.logger.Info("server shutdown", "addr", s.http.Addr, "timeout", timeout)
 
 	if s.mdnsOn {
-		_ = s.discoverer.Unregister()
+		_ = s.cfg.Discoverer.Unregister()
 		s.mdnsOn = false
 	}
 
@@ -233,8 +244,8 @@ func (s *Server) StopWithTimeout(timeout time.Duration) error {
 		}
 	}
 
-	if s.store != nil {
-		if cerr := s.store.Close(); cerr != nil {
+	if s.cfg.Store != nil {
+		if cerr := s.cfg.Store.Close(); cerr != nil {
 			s.logger.Warn("store close", "err", cerr)
 		}
 	}
@@ -253,7 +264,7 @@ func (s *Server) startMDNS() error {
 		fmt.Sprintf("port=%d", s.cfg.Port),
 	}
 
-	if err := s.discoverer.Register(
+	if err := s.cfg.Discoverer.Register(
 		"clipik",
 		"_clipik._tcp",
 		s.cfg.Port,
@@ -283,7 +294,7 @@ func (s *Server) runStoreTrim(ctx context.Context) {
 			s.logger.Info("trim stopped")
 			return
 		case <-t.C:
-			n, err := s.store.Trim(s.cfg.TrimLimit)
+			n, err := s.cfg.Store.Trim(s.cfg.TrimLimit)
 			if err != nil {
 				s.logger.Warn("store trim", "err", err)
 			} else if n > 0 {

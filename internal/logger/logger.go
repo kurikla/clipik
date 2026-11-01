@@ -19,7 +19,7 @@ func New(logDir string, level logger.LogLevel, prefix string) (*slog.Logger, err
 	}
 
 	if prefix == "" {
-		prefix = "clipik"
+		return nil, fmt.Errorf("log_prefix is required, received %q", prefix)
 	}
 
 	if err := archiveOldLogs(logDir, prefix); err != nil {

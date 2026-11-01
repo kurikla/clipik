@@ -7,8 +7,9 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/kurikla/clipik-s/pkg/model"
 	_ "modernc.org/sqlite"
+	"github.com/kurikla/clipik-s/pkg/model"
+	"github.com/google/uuid"
 )
 
 type SqliteStore struct {
@@ -33,7 +34,7 @@ func NewSqliteStore(path string) (*SqliteStore, error) {
 
 	if _, err := db.Exec(`
 		CREATE TABLE IF NOT EXISTS history (
-			id         INTEGER PRIMARY KEY AUTOINCREMENT,
+			id         TEXT PRIMARY KEY,
 			mime       TEXT NOT NULL,
 			data       BLOB NOT NULL,
 			created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
@@ -48,11 +49,14 @@ func NewSqliteStore(path string) (*SqliteStore, error) {
 }
 
 func (s *SqliteStore) Save(c model.Clipboard) (*model.Clipboard, error) {
+	c.ID = uuid.New()
+
 	err := s.db.QueryRow(
-		`INSERT INTO history (mime, data) VALUES (?, ?) RETURNING id, created_at`,
+		`INSERT INTO history (id, mime, data) VALUES (?, ?, ?) RETURNING created_at`,
+		c.ID,
 		c.Mime,
 		c.Data,
-	).Scan(&c.ID, &c.CreatedAt)
+	).Scan(&c.CreatedAt)
 
 	if err != nil {
 		return nil, err

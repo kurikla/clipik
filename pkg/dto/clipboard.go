@@ -1,5 +1,7 @@
 package dto
 
+import "github.com/google/uuid"
+
 type ClipboardType string
 
 const (
@@ -8,8 +10,8 @@ const (
 )
 
 type ClipboardFile struct {
-	ID   string  `json:"id" msgpack:"id"`
-	Name string  `json:"name" msgpack:"name"`
+	ID   uuid.UUID `json:"id" msgpack:"id"`
+	Name string    `json:"name" msgpack:"name"`
 }
 
 type Clipboard struct {
