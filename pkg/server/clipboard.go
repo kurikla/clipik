@@ -86,10 +86,10 @@ func (s *Server) handleClipboard(w http.ResponseWriter, r *http.Request) {
 		}
 
 		s.logger.Info("clipboard saved",
-					  "id", saved.ID,
-					  "mime", saved.Mime,
-					  "size", len(saved.Data),
-					  "created_at", saved.CreatedAt)
+			"id", saved.ID,
+			"mime", saved.Mime,
+			"size", len(saved.Data),
+			"created_at", saved.CreatedAt)
 	}
 
 	return

@@ -140,8 +140,8 @@ func New(cfg *Config) (*Server, error) {
 	}
 
 	lg.Info("server identity loaded",
-			"path", cfg.IdentityPath,
-			"id", fmt.Sprintf("%x", identity.Public().(ed25519.PublicKey)))
+		"path", cfg.IdentityPath,
+		"id", fmt.Sprintf("%x", identity.Public().(ed25519.PublicKey)))
 
 	s := &Server{
 		cfg:        *cfg,
@@ -285,9 +285,9 @@ func (s *Server) startMDNS() error {
 
 	s.mdnsOn = true
 	s.logger.Info("mdns registered",
-				  "service", "_clipik._tcp",
-				  "interfaces", s.cfg.Interfaces,
-				  "port", s.cfg.Port)
+		"service", "_clipik._tcp",
+		"interfaces", s.cfg.Interfaces,
+		"port", s.cfg.Port)
 
 	return nil
 }

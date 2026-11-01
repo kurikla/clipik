@@ -134,7 +134,7 @@ func New(cfg *Config) (*Client, error) {
 	}
 
 	lg.Info("client identity loaded",
-			"path", cfg.IdentityPath,
+		"path", cfg.IdentityPath,
 		"id", fmt.Sprintf("%x", identity.Public().(ed25519.PublicKey)))
 
 	return &Client{

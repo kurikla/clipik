@@ -15,8 +15,8 @@ func (o *Observer) OnFound(service model.Service) {
 	o.client.mu.Unlock()
 
 	o.client.logger.Info("service found",
-						 "name", service.Name,
-						 "addr", fmt.Sprintf("%s:%d", service.Ip, service.Port))
+		"name", service.Name,
+		"addr", fmt.Sprintf("%s:%d", service.Ip, service.Port))
 
 	addr := fmt.Sprintf("%s:%d", service.Ip, service.Port)
 	if err := o.client.connect(addr); err != nil {
@@ -43,8 +43,8 @@ func (o *Observer) OnLost(service model.Service) {
 	o.client.mu.Unlock()
 
 	o.client.logger.Info("service lost",
-						 "name", service.Name,
-						 "addr", fmt.Sprintf("%s:%d", service.Ip, service.Port))
+		"name", service.Name,
+		"addr", fmt.Sprintf("%s:%d", service.Ip, service.Port))
 
 	if connected {
 		o.client.disconnect(sc.addr)

@@ -120,7 +120,7 @@ func (s *Server) handleHandshakeHTTP(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(ack)
 	s.logger.Info("handshake ok",
-				  "client_id", fmt.Sprintf("%x", hs.ClientID),
-				  "format", hs.Format,
-				  "token_prefix", token[:8])
+		"client_id", fmt.Sprintf("%x", hs.ClientID),
+		"format", hs.Format,
+		"token_prefix", token[:8])
 }
