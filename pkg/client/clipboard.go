@@ -5,9 +5,9 @@ import (
 	"time"
 
 	"github.com/coder/websocket"
-	"github.com/kurikla/clipik-s/internal/crypto"
-	"github.com/kurikla/clipik-s/pkg/dto"
-	"github.com/kurikla/clipik-s/pkg/model"
+	"github.com/kurikla/clipik/internal/crypto"
+	"github.com/kurikla/clipik/pkg/dto"
+	"github.com/kurikla/clipik/pkg/model"
 )
 
 func (c *Client) SendClipboard(clip model.Clipboard) {

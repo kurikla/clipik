@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 	"regexp"
 
-	"github.com/kurikla/clipik-s/internal/crypto"
+	"github.com/kurikla/clipik/internal/crypto"
 )
 
 var fileIDRe = regexp.MustCompile(`^[a-zA-Z]0-9_-{1,64}$`)

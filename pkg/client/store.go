@@ -1,7 +1,7 @@
 package client
 
 import (
-	"github.com/kurikla/clipik-s/pkg/model"
+	"github.com/kurikla/clipik/pkg/model"
 	"github.com/google/uuid"
 )
 

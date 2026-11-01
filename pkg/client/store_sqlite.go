@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/kurikla/clipik-s/pkg/model"
+	"github.com/kurikla/clipik/pkg/model"
 )
 
 type SqliteStore struct {

@@ -10,15 +10,15 @@ import (
 	"errors"
 	"crypto/ed25519"
 
-	pkglog "github.com/kurikla/clipik-s/pkg/logger"
-	"github.com/kurikla/clipik-s/internal/logger"
-	"github.com/kurikla/clipik-s/pkg/dto"
-	"github.com/kurikla/clipik-s/internal/crypto"
+	pkglog "github.com/kurikla/clipik/pkg/logger"
+	"github.com/kurikla/clipik/internal/logger"
+	"github.com/kurikla/clipik/pkg/dto"
+	"github.com/kurikla/clipik/internal/crypto"
 )
 
 const (
 	defaultHandshakeTimeout = 7 * time.Second
-	defaultLogPrefix = "clipik-s"
+	defaultLogPrefix = "clipik"
 	defaultSizeLimit int64 = 64 * 1024 * 1024
 	defaultShutdownTimeout = 7 * time.Second
 	defaultTrimInterval = 7 * time.Second

@@ -2,7 +2,7 @@ package client
 
 import (
 	"fmt"
-	"github.com/kurikla/clipik-s/pkg/model"
+	"github.com/kurikla/clipik/pkg/model"
 )
 
 type Observer struct {

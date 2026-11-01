@@ -8,10 +8,10 @@ import (
 	"github.com/coder/websocket"
 	"github.com/gabriel-vasile/mimetype"
 
-	"github.com/kurikla/clipik-s/pkg/dto"
-	"github.com/kurikla/clipik-s/pkg/model"
-	"github.com/kurikla/clipik-s/internal/codec"
-	"github.com/kurikla/clipik-s/internal/crypto"
+	"github.com/kurikla/clipik/pkg/dto"
+	"github.com/kurikla/clipik/pkg/model"
+	"github.com/kurikla/clipik/internal/codec"
+	"github.com/kurikla/clipik/internal/crypto"
 )
 
 func (s *Server) handleClipboard(w http.ResponseWriter, r *http.Request) {

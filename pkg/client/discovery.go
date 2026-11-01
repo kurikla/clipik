@@ -1,6 +1,6 @@
 package client
 
-import "github.com/kurikla/clipik-s/pkg/model"
+import "github.com/kurikla/clipik/pkg/model"
 
 type Discoverer interface {
 	Start(observer *Observer) error

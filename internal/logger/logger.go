@@ -9,7 +9,7 @@ import (
 	"path/filepath"
 	"compress/gzip"
 
-	"github.com/kurikla/clipik-s/pkg/logger"
+	"github.com/kurikla/clipik/pkg/logger"
 	"github.com/DeRuina/timberjack"
 )
 

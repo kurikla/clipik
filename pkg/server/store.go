@@ -1,6 +1,6 @@
 package server
 
-import "github.com/kurikla/clipik-s/pkg/model"
+import "github.com/kurikla/clipik/pkg/model"
 
 type Store interface {
 	Save(c model.Clipboard) (*model.Clipboard, error)

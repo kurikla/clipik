@@ -6,8 +6,8 @@ import (
 	"time"
 
 	"github.com/coder/websocket"
-	"github.com/kurikla/clipik-s/internal/crypto"
-	"github.com/kurikla/clipik-s/pkg/dto"
+	"github.com/kurikla/clipik/internal/crypto"
+	"github.com/kurikla/clipik/pkg/dto"
 )
 
 func (c *Client) runPingLoop(ctx context.Context, sc *serverConn) {

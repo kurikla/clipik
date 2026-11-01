@@ -8,7 +8,7 @@ import (
 	"sync"
 
 	"github.com/grandcat/zeroconf"
-	"github.com/kurikla/clipik-s/pkg/model"
+	"github.com/kurikla/clipik/pkg/model"
 )
 
 type ZeroconfDiscoverer struct {

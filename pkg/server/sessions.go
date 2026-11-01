@@ -7,7 +7,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/kurikla/clipik-s/pkg/dto"
+	"github.com/kurikla/clipik/pkg/dto"
 )
 
 type session struct {

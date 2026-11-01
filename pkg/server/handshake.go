@@ -10,8 +10,8 @@ import (
 	"net/http"
 	"encoding/json"
 
-	"github.com/kurikla/clipik-s/internal/crypto"
-	"github.com/kurikla/clipik-s/pkg/dto"
+	"github.com/kurikla/clipik/internal/crypto"
+	"github.com/kurikla/clipik/pkg/dto"
 )
 
 func (s *Server) handleHandshakeHTTP(w http.ResponseWriter, r *http.Request) {

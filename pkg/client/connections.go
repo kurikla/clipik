@@ -6,7 +6,7 @@ import (
 	"net/http"
 
 	"github.com/coder/websocket"
-	"github.com/kurikla/clipik-s/internal/codec"
+	"github.com/kurikla/clipik/internal/codec"
 )
 
 func (c *Client) connect(addr string) error {

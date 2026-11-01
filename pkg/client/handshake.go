@@ -13,8 +13,8 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/kurikla/clipik-s/internal/crypto"
-	"github.com/kurikla/clipik-s/pkg/dto"
+	"github.com/kurikla/clipik/internal/crypto"
+	"github.com/kurikla/clipik/pkg/dto"
 )
 
 func (c *Client) handshake(ctx context.Context, addr string) (cipher.AEAD, dto.Format, string, error) {

@@ -7,9 +7,9 @@ import (
 
 	"github.com/coder/websocket"
 
-	"github.com/kurikla/clipik-s/pkg/dto"
-	"github.com/kurikla/clipik-s/internal/crypto"
-	"github.com/kurikla/clipik-s/internal/codec"
+	"github.com/kurikla/clipik/pkg/dto"
+	"github.com/kurikla/clipik/internal/crypto"
+	"github.com/kurikla/clipik/internal/codec"
 )
 
 func (s *Server) handlePing(w http.ResponseWriter, r *http.Request) {

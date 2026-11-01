@@ -12,12 +12,12 @@ import (
 	"time"
 
 	"github.com/coder/websocket"
-	"github.com/kurikla/clipik-s/internal/codec"
-	"github.com/kurikla/clipik-s/internal/crypto"
-	"github.com/kurikla/clipik-s/internal/logger"
-	"github.com/kurikla/clipik-s/pkg/dto"
-	pkglog "github.com/kurikla/clipik-s/pkg/logger"
-	"github.com/kurikla/clipik-s/pkg/model"
+	"github.com/kurikla/clipik/internal/codec"
+	"github.com/kurikla/clipik/internal/crypto"
+	"github.com/kurikla/clipik/internal/logger"
+	"github.com/kurikla/clipik/pkg/dto"
+	pkglog "github.com/kurikla/clipik/pkg/logger"
+	"github.com/kurikla/clipik/pkg/model"
 )
 
 const (
