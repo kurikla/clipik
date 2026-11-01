@@ -62,6 +62,7 @@ func NewHarness(t *testing.T) *Harness {
 			LogDir: filepath.Join(dir, "server-logs"),
 			LogLevel: logger.LogDebug,
 			LogPrefix: "server",
+			LogToStdout: logToStdout(),
 			SizeLimit: 64 << 20,
 			HandshakeTimeout: 5 * time.Second,
 			TrimInterval: 500 * time.Millisecond,
@@ -113,6 +114,7 @@ func (h *Harness) NewClient(d client.Discoverer) *client.Client {
 		LogDir: filepath.Join(h.Dir, "client-logs"),
 		LogLevel: logger.LogError,
 		LogPrefix: "client",
+		LogToStdout: logToStdout(),
 		Store: st,
 		Discoverer: d,
 	})

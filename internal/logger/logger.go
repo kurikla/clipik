@@ -13,20 +13,27 @@ import (
 	"github.com/DeRuina/timberjack"
 )
 
-func New(logDir string, level logger.LogLevel, prefix string) (*slog.Logger, error) {
-	if err := os.MkdirAll(logDir, 0o755); err != nil {
-		return nil, fmt.Errorf("create log_dir: %w", err)
+type Config struct {
+	Dir      string
+	Level    logger.LogLevel
+	Prefix   string
+	ToStdout bool
+}
+
+func New(cfg *Config) (*slog.Logger, error) {
+	if err := os.MkdirAll(cfg.Dir, 0o755); err != nil {
+		return nil, fmt.Errorf("create log dir: %w", err)
 	}
 
-	if prefix == "" {
-		return nil, fmt.Errorf("log_prefix is required, received %q", prefix)
+	if cfg.Prefix == "" {
+		return nil, fmt.Errorf("log prefix is required, received %q", cfg.Prefix)
 	}
 
-	if err := archiveOldLogs(logDir, prefix); err != nil {
+	if err := archiveOldLogs(cfg.Dir, cfg.Prefix); err != nil {
 		return nil, fmt.Errorf("archive old logs: %w", err)
 	}
 
-	filename := filepath.Join(logDir, prefix+".log")
+	filename := filepath.Join(cfg.Dir, cfg.Prefix+".log")
 
 	tj := &timberjack.Logger{
 		Filename:    filename,
@@ -39,10 +46,21 @@ func New(logDir string, level logger.LogLevel, prefix string) (*slog.Logger, err
 		FileMode:    0o644,
 	}
 
-	sLevel := slogLevel(level)
-	w := io.MultiWriter(tj, os.Stdout)
+	sLevel := slogLevel(cfg.Level)
 
-	return slog.New(slog.NewTextHandler(w, &slog.HandlerOptions{Level: sLevel})), nil
+	var w io.Writer
+	if cfg.ToStdout {
+		w = io.MultiWriter(tj, os.Stdout)
+	} else {
+		w = tj
+	}
+
+	return slog.New(
+		slog.NewTextHandler(
+			w,
+			&slog.HandlerOptions{Level: sLevel},
+		),
+	), nil
 }
 
 func slogLevel(l logger.LogLevel) slog.Level {

@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"github.com/coder/websocket"
+	"github.com/google/uuid"
 	"github.com/kurikla/clipik/internal/codec"
 	"github.com/kurikla/clipik/internal/crypto"
 	"github.com/kurikla/clipik/internal/logger"
@@ -31,6 +32,7 @@ type Config struct {
 	LogDir           string
 	LogLevel         pkglog.LogLevel
 	LogPrefix        string
+	LogToStdout		 bool
 	SizeLimit        int64
 	HandshakeTimeout time.Duration
 	IdentityPath	 string
@@ -121,7 +123,12 @@ func New(cfg *Config) (*Client, error) {
 		return nil, errors.New("client: PingInterval must be positive")
 	}
 
-	lg, err := logger.New(cfg.LogDir, cfg.LogLevel, cfg.LogPrefix)
+	lg, err := logger.New(&logger.Config{
+		Dir: cfg.LogDir,
+		Level: cfg.LogLevel,
+		Prefix: cfg.LogPrefix,
+		ToStdout: cfg.LogToStdout,
+	})
 
 	if err != nil {
 		return nil, fmt.Errorf("logger: %w", err)
@@ -214,6 +221,10 @@ func (c *Client) Connected() []string {
 
 func (c *Client) History(limit int) ([]model.Clipboard, error) {
 	return c.cfg.Store.List(limit)
+}
+
+func (c *Client) Get(id uuid.UUID) (*model.Clipboard, error) {
+	return c.cfg.Store.Get(id)
 }
 
 func (c *Client) Latest() (*model.Clipboard, error){

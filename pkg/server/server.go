@@ -34,6 +34,7 @@ type Config struct {
 	LogDir           string
 	LogLevel         pkglog.LogLevel
 	LogPrefix        string
+	LogToStdout		 bool
 	SizeLimit        int64
 	HandshakeTimeout time.Duration
 	IdentityPath     string
@@ -128,7 +129,12 @@ func New(cfg *Config) (*Server, error) {
 		return nil, errors.New("server: TrimLimit must be >= 0")
 	}
 
-	lg, err := logger.New(cfg.LogDir, cfg.LogLevel, cfg.LogPrefix)
+	lg, err := logger.New(&logger.Config{
+		Dir: cfg.LogDir,
+		Level: cfg.LogLevel,
+		Prefix: cfg.LogPrefix,
+		ToStdout: cfg.LogToStdout,
+	})
 
 	if err != nil {
 		return nil, fmt.Errorf("logger: %w", err)

@@ -37,11 +37,11 @@ func (s *sessionStore) create(aead cipher.AEAD, clientID []byte, format dto.Form
 	now := time.Now()
 	s.mu.Lock()
 	s.sessions[tok] = &session{
-		aead: aead,
-		clientID: clientID,
-		format: format,
+		aead:      aead,
+		clientID:  clientID,
+		format:    format,
 		createdAt: now,
-		lastSeen: now,
+		lastSeen:  now,
 	}
 	s.mu.Unlock()
 	return tok, nil
@@ -60,11 +60,11 @@ func (s *sessionStore) get(tok string) (*session, bool) {
 	return sess, true
 }
 
-func (s *sessionStore) delete(tok string) {
-	s.mu.Lock()
-	delete(s.sessions, tok)
-	s.mu.Unlock()
-}
+// func (s *sessionStore) del(tok string) {
+//	s.mu.Lock()
+//	delete(s.sessions, tok)
+//	s.mu.Unlock()
+// }
 
 func (s *sessionStore) GC(maxIdle time.Duration) {
 	cutoff := time.Now().Add(-maxIdle)

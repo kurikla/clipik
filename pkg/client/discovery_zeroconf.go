@@ -125,6 +125,7 @@ func (d *ZeroconfDiscoverer) handleEntry(e *zeroconf.ServiceEntry, observer *Obs
 		d.logger.Info("zeroconf: service accepted, connecting",
 			"name", svc.Name,
 			"addr", addr)
+
 		observer.OnAccept(svc)
 	} else {
 		d.logger.Info("zeroconf: service not auto-accepted, waiting for user",
