@@ -40,7 +40,9 @@ func New(logDir string, level logger.LogLevel, prefix string) (*slog.Logger, err
 	}
 
 	sLevel := slogLevel(level)
-	return slog.New(slog.NewTextHandler(tj, &slog.HandlerOptions{Level: sLevel})), nil
+	w := io.MultiWriter(tj, os.Stdout)
+
+	return slog.New(slog.NewTextHandler(w, &slog.HandlerOptions{Level: sLevel})), nil
 }
 
 func slogLevel(l logger.LogLevel) slog.Level {

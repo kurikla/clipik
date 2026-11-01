@@ -26,6 +26,9 @@ func (s *Server) handlePing(w http.ResponseWriter, r *http.Request) {
 	}
 	defer conn.Close(websocket. StatusNormalClosure, "")
 
+	s.trackConn(conn)
+	defer s.untrackConn(conn)
+
 	cdc, err := codec.New(sess.format)
 
 	s.logger.Info("client connected", "client_id", fmt.Sprintf("%x", sess.clientID))

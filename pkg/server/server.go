@@ -1,25 +1,27 @@
 package server
 
 import (
-	"fmt"
-	"time"
 	"context"
+	"crypto/ed25519"
+	"errors"
+	"fmt"
+	"log/slog"
 	"net"
 	"net/http"
-	"log/slog"
-	"errors"
-	"crypto/ed25519"
+	"sync"
+	"time"
 
-	pkglog "github.com/kurikla/clipik/pkg/logger"
+	"github.com/coder/websocket"
+	"github.com/kurikla/clipik/internal/crypto"
 	"github.com/kurikla/clipik/internal/logger"
 	"github.com/kurikla/clipik/pkg/dto"
-	"github.com/kurikla/clipik/internal/crypto"
+	pkglog "github.com/kurikla/clipik/pkg/logger"
 )
 
 const (
 	defaultHandshakeTimeout = 7 * time.Second
 	defaultLogPrefix = "clipik"
-	defaultSizeLimit int64 = 64 * 1024 * 1024
+	defaultSizeLimit int64 = 64 << 20
 	defaultShutdownTimeout = 7 * time.Second
 	defaultTrimInterval = 7 * time.Second
 	defaultTrimLimit = 3000
@@ -56,6 +58,9 @@ type Server struct {
 	gcDone     chan struct{}
 	trimCancel context.CancelFunc
 	trimDone   chan struct{}
+
+	connsMu sync.Mutex
+	conns   map[*websocket.Conn]struct{}
 }
 
 func New(cfg *Config) (*Server, error) {
@@ -143,6 +148,7 @@ func New(cfg *Config) (*Server, error) {
 		identity:   identity,
 		logger:     lg,
 		sessions:   newSessionStore(),
+		conns: make(map[*websocket.Conn]struct{}),
 		allowedFormats: map[dto.Format]bool{
 			dto.FormatJSON: true,
 			dto.FormatMsgpack: true,
@@ -166,6 +172,7 @@ func New(cfg *Config) (*Server, error) {
 }
 
 func (s *Server) Start() error {
+	s.logger.Info("Keep tcp", "addr", s.http.Addr)
 	ln, err := net.Listen("tcp", s.http.Addr)
 
 	if err != nil {
@@ -214,6 +221,8 @@ func (s *Server) StopWithTimeout(timeout time.Duration) error {
 		_ = s.cfg.Discoverer.Unregister()
 		s.mdnsOn = false
 	}
+
+	s.closeAllConns("server shutting down")
 
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()

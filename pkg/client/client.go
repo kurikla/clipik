@@ -22,8 +22,9 @@ import (
 
 const (
 	defaultLogPrefix = "clipik-c"
-	defaultSizeLimit int64 = 64 * 1024 * 1024
+	defaultSizeLimit int64 = 64 << 20
 	defaultHandshakeTimeout = 7 * time.Second
+	defaultPingInterval = 30 * time.Second
 )
 
 type Config struct {
@@ -36,6 +37,7 @@ type Config struct {
 	Store			 Store
 	Discoverer		 Discoverer
 	Format			 dto.Format
+	PingInterval	 time.Duration
 }
 
 type Client struct {
@@ -111,6 +113,14 @@ func New(cfg *Config) (*Client, error) {
 		return nil, errors.New("client: Format is invalid")
 	}
 
+	if cfg.PingInterval == 0 {
+		cfg.PingInterval = defaultPingInterval
+	}
+
+	if cfg.PingInterval < 0 {
+		return nil, errors.New("client: PingInterval must be positive")
+	}
+
 	lg, err := logger.New(cfg.LogDir, cfg.LogLevel, cfg.LogPrefix)
 
 	if err != nil {
@@ -123,9 +133,9 @@ func New(cfg *Config) (*Client, error) {
 		return nil, fmt.Errorf("identity: %w", err)
 	}
 
-	lg.Info("client identity laoded",
+	lg.Info("client identity loaded",
 			"path", cfg.IdentityPath,
-			"id", fmt.Sprintf("%x", identity.Public().(ed25519.PublicKey)))
+		"id", fmt.Sprintf("%x", identity.Public().(ed25519.PublicKey)))
 
 	return &Client{
 		cfg: *cfg,

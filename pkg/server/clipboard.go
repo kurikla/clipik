@@ -27,6 +27,9 @@ func (s *Server) handleClipboard(w http.ResponseWriter, r *http.Request) {
 	}
 	defer conn.Close(websocket. StatusNormalClosure, "")
 
+	s.trackConn(conn)
+	defer s.untrackConn(conn)
+
 	s.logger.Info("client connected", "client_id", fmt.Sprintf("%x", sess.clientID))
 
 	cdc, err := codec.New(sess.format)
@@ -72,7 +75,7 @@ func (s *Server) handleClipboard(w http.ResponseWriter, r *http.Request) {
 		}
 
 		s.logger.Info("clipboard", "mime", m, "size", len(*clip.Data))
-		saved, err := s.store.Save(model.Clipboard{
+		saved, err := s.cfg.Store.Save(model.Clipboard{
 			Mime: m,
 			Data: *clip.Data,
 		})

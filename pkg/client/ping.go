@@ -11,7 +11,7 @@ import (
 )
 
 func (c *Client) runPingLoop(ctx context.Context, sc *serverConn) {
-	t := time.NewTicker(30 * time.Second)
+	t := time.NewTicker(c.cfg.PingInterval)
 	defer t.Stop()
 
 	for {
@@ -33,7 +33,7 @@ func (c *Client) runPingLoop(ctx context.Context, sc *serverConn) {
 }
 
 func (c *Client) pingOnce(ctx context.Context, sc *serverConn) (time.Duration, error) {
-	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+	ctx, cancel := context.WithTimeout(ctx, 1*time.Second)
 	defer cancel()
 
 	ping := dto.Ping{Ts: time.Now().UnixNano()}
@@ -47,6 +47,7 @@ func (c *Client) pingOnce(ctx context.Context, sc *serverConn) (time.Duration, e
 		return 0, err
 	}
 
+	c.logger.Info("ping to", "addr", sc.addr)
 	if err := sc.pingWS.Write(ctx, websocket.MessageBinary, ciphertext); err != nil {
 		return 0, err
 	}
@@ -66,6 +67,7 @@ func (c *Client) pingOnce(ctx context.Context, sc *serverConn) (time.Duration, e
 		return 0, err
 	}
 
+	c.logger.Info("pong from", "addr", sc.addr, "pong", pong)
 	if pong.PingTs != ping.Ts {
 		return 0, errors.New("pong mismatch")
 	}

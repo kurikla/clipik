@@ -1,13 +1,10 @@
 package model
 
-import (
-	"time"
-	"github.com/google/uuid"
-)
+import "github.com/google/uuid"
 
 type Clipboard struct {
 	ID        uuid.UUID
 	Mime      string
 	Data      []byte
-	CreatedAt time.Time
+	CreatedAt string
 }
