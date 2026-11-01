@@ -227,6 +227,10 @@ func (c *Client) Get(id uuid.UUID) (*model.Clipboard, error) {
 	return c.cfg.Store.Get(id)
 }
 
+func (c *Client) Search(query string, limit int) ([]model.Clipboard, error) {
+	return c.cfg.Store.Search(query, limit)
+}
+
 func (c *Client) Latest() (*model.Clipboard, error){
 	return c.cfg.Store.Latest()
 }

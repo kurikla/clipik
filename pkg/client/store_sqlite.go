@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/google/uuid"
 	"github.com/kurikla/clipik/pkg/model"
@@ -108,6 +109,42 @@ func (s *SqliteStore) Latest() (*model.Clipboard, error) {
 	}
 
 	return &c, nil
+}
+
+func (s *SqliteStore) Search(query string, limit int) ([]model.Clipboard, error) {
+	pattern := "%" + escapeLike(query) + "%"
+
+	rows, err := s.db.Query(`
+		SELECT id, mime, data, created_at
+		FROM history
+		WHERE mime LIKE 'text/%'
+		AND CAST(data AS TEXT) LIKE ? ESCAPE '\'
+		ORDER BY created_at DESC, rowid DESC
+		LIMIT ?
+	`, pattern, limit)
+
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var out []model.Clipboard
+	for rows.Next() {
+		var c model.Clipboard
+		if err := rows.Scan(&c.ID, &c.Mime, &c.Data, &c.CreatedAt); err != nil {
+			return nil, err
+		}
+		out = append(out, c)
+	}
+
+	return out, rows.Err()
+}
+
+func escapeLike(s string) string {
+	s = strings.ReplaceAll(s, `\`, `\\`)
+	s = strings.ReplaceAll(s, `%`, `\%`)
+	s = strings.ReplaceAll(s, `_`, `\_`)
+	return s
 }
 
 func (s *SqliteStore) Close() error {
