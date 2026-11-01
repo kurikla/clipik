@@ -60,7 +60,7 @@ func NewHarness(t *testing.T) *Harness {
 			Interfaces: nil,
 			FilesDir: filepath.Join(dir, "files"),
 			LogDir: filepath.Join(dir, "server-logs"),
-			LogLevel: logger.LogError,
+			LogLevel: logger.LogDebug,
 			LogPrefix: "server",
 			SizeLimit: 64 << 20,
 			HandshakeTimeout: 5 * time.Second,

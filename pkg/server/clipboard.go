@@ -30,7 +30,7 @@ func (s *Server) handleClipboard(w http.ResponseWriter, r *http.Request) {
 	s.trackConn(conn)
 	defer s.untrackConn(conn)
 
-	s.logger.Info("client connected", "client_id", fmt.Sprintf("%x", sess.clientID))
+	s.logger.Info("clipboard client connected", "client_id", fmt.Sprintf("%x", sess.clientID))
 
 	cdc, err := codec.New(sess.format)
 

@@ -31,7 +31,7 @@ func (s *Server) handlePing(w http.ResponseWriter, r *http.Request) {
 
 	cdc, err := codec.New(sess.format)
 
-	s.logger.Info("client connected", "client_id", fmt.Sprintf("%x", sess.clientID))
+	s.logger.Info("ping client connected", "client_id", fmt.Sprintf("%x", sess.clientID))
 
 	for {
 		typ, data, err := conn.Read(r.Context())
