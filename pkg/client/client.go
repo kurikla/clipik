@@ -148,6 +148,8 @@ func New(cfg *Config) (*Client, error) {
 		"path", cfg.IdentityPath,
 		"id", fmt.Sprintf("%x", identity.Public().(ed25519.PublicKey)))
 
+	cfg.Discoverer.SetLogger(lg)
+
 	return &Client{
 		cfg: *cfg,
 		identity: identity,
@@ -214,8 +216,13 @@ func (c *Client) Discovered() []model.Service {
 }
 
 func (c *Client) Accept(service model.Service) {
-	obs := &Observer{client: c}
-	obs.OnAccept(service)
+	addr := fmt.Sprintf("%s:%d", service.Ip, service.Port)
+
+	go func () {
+		if err := c.connect(addr); err != nil {
+			c.logger.Warn("connect", "addr", addr, "err", err)
+		}
+	}()
 }
 
 func (c *Client) Connected() []string {

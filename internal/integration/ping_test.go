@@ -14,7 +14,7 @@ func TestPing(t *testing.T) {
 	h := NewHarness(t)
 	defer h.Cleanup()
 
-	d := &FakeDiscoverer{Addr: h.ServerAddr, AutoAccept: true}
+	d := &FakeDiscoverer{Addr: h.ServerAddr}
 
 	st, err := client.NewSqliteStore(h.StorePath)
 	if err != nil {
@@ -43,6 +43,9 @@ func TestPing(t *testing.T) {
 	if err := c.Start(); err != nil {
 		t.Fatalf("start: %v", err)
 	}
+
+	s := waitDiscovered(t, c, h.ServerAddr, 3*time.Second)
+	c.Accept(*s)
 
 	waitConnected(t, c, h.ServerAddr, 3*time.Second)
 
@@ -59,7 +62,7 @@ func TestPing_ServerDownDisconnects(t *testing.T) {
 	h := NewHarness(t)
 	defer h.Cleanup()
 
-	d := &FakeDiscoverer{Addr: h.ServerAddr, AutoAccept: true}
+	d := &FakeDiscoverer{Addr: h.ServerAddr}
 
 	st, err := client.NewSqliteStore(h.StorePath)
 	if err != nil {
@@ -88,6 +91,9 @@ func TestPing_ServerDownDisconnects(t *testing.T) {
 	if err := c.Start(); err != nil {
 		t.Fatalf("start: %v", err)
 	}
+
+	s := waitDiscovered(t, c, h.ServerAddr, 3*time.Second)
+	c.Accept(*s)
 
 	waitConnected(t, c, h.ServerAddr, 3*time.Second)
 

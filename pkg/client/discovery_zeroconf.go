@@ -12,7 +12,6 @@ import (
 )
 
 type ZeroconfDiscoverer struct {
-	filter Filter
 	logger *slog.Logger
 
 	mu     sync.Mutex
@@ -20,11 +19,9 @@ type ZeroconfDiscoverer struct {
 	done   chan struct{}
 }
 
-func NewZeroconfDiscoverer(filter Filter, logger *slog.Logger) *ZeroconfDiscoverer {
-	return &ZeroconfDiscoverer{
-		filter: filter,
-		logger: logger,
-	}
+func (d *ZeroconfDiscoverer) SetLogger(logger *slog.Logger) error {
+	d.logger = logger
+	return nil
 }
 
 func (d *ZeroconfDiscoverer) Start(observer *Observer) error {
@@ -122,16 +119,4 @@ func (d *ZeroconfDiscoverer) handleEntry(e *zeroconf.ServiceEntry, observer *Obs
 		"addr", addr)
 
 	observer.OnFound(svc)
-
-	if d.filter != nil && d.filter.Accept(svc) {
-		d.logger.Info("zeroconf: service accepted, connecting",
-			"name", svc.Name,
-			"addr", addr)
-
-		observer.OnAccept(svc)
-	} else {
-		d.logger.Info("zeroconf: service not auto-accepted, waiting for user",
-			"name", svc.Name,
-			"addr", addr)
-	}
 }

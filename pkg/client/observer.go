@@ -19,16 +19,6 @@ func (o *Observer) OnFound(service model.Service) {
 		"addr", fmt.Sprintf("%s:%d", service.Ip, service.Port))
 }
 
-func (o *Observer) OnAccept(service model.Service) {
-	addr := fmt.Sprintf("%s:%d", service.Ip, service.Port)
-
-	go func () {
-		if err := o.client.connect(addr); err != nil {
-			o.client.logger.Warn("connect", "addr", addr, "err", err)
-		}
-	}()
-}
-
 func (o *Observer) OnLost(service model.Service) {
 	key := serviceKey(service)
 
