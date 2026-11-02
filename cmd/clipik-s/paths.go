@@ -67,3 +67,24 @@ func getBaseLibDir() string {
 		return filepath.Join(home, ".local", "clipik-s")
 	}
 }
+
+func expandTilde(p string) string {
+	if p == "" || p[0] != '~' {
+		return p
+	}
+
+	home, err := os.UserHomeDir()
+	if err != nil {
+		return p
+	}
+
+	if len(p) == 1 {
+		return home
+	}
+
+	if p[1] != '/' && p[1] != '\\' {
+		return p   // ~user — не поддерживаем
+	}
+
+	return filepath.Join(home, p[2:])
+}

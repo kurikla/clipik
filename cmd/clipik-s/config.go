@@ -90,11 +90,18 @@ func loadConfigFile(cmd *cobra.Command) (*Config, error) {
 		return nil, fmt.Errorf("read config: %w", err)
 	}
 
-	cfg.ConfigPath = path
+	cfg.ConfigPath = expandTilde(path)
 
 	if toSave {
-		saveConfigFile(cfg)
+		if err := saveConfigFile(cfg); err != nil {
+			return nil, err
+		}
 	}
+
+	cfg.IdentityPath = expandTilde(cfg.IdentityPath)
+	cfg.LogDir       = expandTilde(cfg.LogDir)
+	cfg.Database     = expandTilde(cfg.Database)
+	cfg.FilesDir     = expandTilde(cfg.FilesDir)
 
 	return cfg, nil
 }
