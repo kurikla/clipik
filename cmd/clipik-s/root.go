@@ -8,11 +8,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var (
-	version = "dev"
-
-	defaultLogStdout bool = false
-)
+var version = "dev"
 
 var rootCmd = &cobra.Command{
 	Use: "clipik-s",

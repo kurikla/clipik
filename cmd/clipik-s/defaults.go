@@ -9,10 +9,11 @@ import (
 )
 
 var (
-	defaultHandshakeTimeout int = 7
-	defaultSizeLimit int64 = 64 << 20
-	defaultTrimInterval int = 30
-	defaultTrimLimit int = 3000
+	defaultLogStdout        bool  = false
+	defaultHandshakeTimeout int   = 7
+	defaultSizeLimit        int64 = 64 << 20
+	defaultTrimInterval     int   = 30
+	defaultTrimLimit        int   = 3000
 )
 
 func getDefaultConfigPath() string {
