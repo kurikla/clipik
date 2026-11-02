@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/kurikla/clipik/pkg/dto"
+	"github.com/kurikla/clipik/pkg/protocol"
 )
 
 func TestHandshake_OK(t *testing.T) {
@@ -31,5 +31,5 @@ func TestHandshake_BadFormat(t *testing.T) {
 	h := NewHarness(t)
 	defer h.Cleanup()
 
-	_ = dto.Version
+	_ = protocol.Version
 }

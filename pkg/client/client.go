@@ -6,8 +6,10 @@ import (
 	"crypto/ed25519"
 	"errors"
 	"fmt"
+	"io"
 	"log/slog"
 	"net/http"
+	"os"
 	"sync"
 	"time"
 
@@ -54,6 +56,8 @@ type Client struct {
 
 	stopCh   chan struct{}
 	stopOnce sync.Once
+
+	logCloser io.Closer
 }
 
 type serverConn struct {
@@ -123,7 +127,7 @@ func New(cfg *Config) (*Client, error) {
 		return nil, errors.New("client: PingInterval must be positive")
 	}
 
-	lg, err := logger.New(&logger.Config{
+	lg, closer, err := logger.New(&logger.Config{
 		Dir: cfg.LogDir,
 		Level: cfg.LogLevel,
 		Prefix: cfg.LogPrefix,
@@ -152,6 +156,7 @@ func New(cfg *Config) (*Client, error) {
 		discovered: make(map[string]model.Service),
 		connections: make(map[string]*serverConn),
 		stopCh: make(chan struct{}),
+		logCloser: closer,
 	}, nil
 }
 
@@ -183,6 +188,12 @@ func (c *Client) Stop() error {
 		if c.cfg.Store != nil {
 			if err := c.cfg.Store.Close(); err != nil {
 				c.logger.Warn("store close", "err", err)
+			}
+		}
+
+		if c.logCloser != nil {
+			if err := c.logCloser.Close(); err != nil {
+				fmt.Fprintf(os.Stderr, "log close: %v\n", err)
 			}
 		}
 	})

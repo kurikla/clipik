@@ -5,13 +5,13 @@ import (
 	"crypto/ecdh"
 	"crypto/ed25519"
 	"crypto/rand"
-	"fmt"
-	"strings"
-	"net/http"
 	"encoding/json"
+	"fmt"
+	"net/http"
 
 	"github.com/kurikla/clipik/internal/crypto"
 	"github.com/kurikla/clipik/pkg/dto"
+	"github.com/kurikla/clipik/pkg/protocol"
 )
 
 func (s *Server) handleHandshakeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -29,14 +29,13 @@ func (s *Server) handleHandshakeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if hs.Protocol != dto.Protocol {
+	if hs.Protocol != protocol.Protocol {
 		http.Error(w, "wrong protocol", http.StatusBadRequest)
 		return
 	}
 
-	if !strings.HasPrefix(hs.Version, "1.") {
-		http.Error(w, "unsupported version", http.StatusBadRequest)
-		return
+	if err := protocol.CheckVersion(hs.Version); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
 	}
 
 	if !s.allowedFormats[hs.Format] {
@@ -107,8 +106,8 @@ func (s *Server) handleHandshakeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	ack := dto.HandshakeAck{
-		Protocol:     dto.Protocol,
-		Version:      dto.Version,
+		Protocol:     protocol.Protocol,
+		Version:      protocol.Version,
 		Format:       hs.Format,
 		ServerPub:    sPub,
 		ServerID:     sID,

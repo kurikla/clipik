@@ -20,17 +20,17 @@ type Config struct {
 	ToStdout bool
 }
 
-func New(cfg *Config) (*slog.Logger, error) {
+func New(cfg *Config) (*slog.Logger, io.Closer, error) {
 	if err := os.MkdirAll(cfg.Dir, 0o755); err != nil {
-		return nil, fmt.Errorf("create log dir: %w", err)
+		return nil, nil, fmt.Errorf("create log dir: %w", err)
 	}
 
 	if cfg.Prefix == "" {
-		return nil, fmt.Errorf("log prefix is required, received %q", cfg.Prefix)
+		return nil, nil, fmt.Errorf("log prefix is required, received %q", cfg.Prefix)
 	}
 
 	if err := archiveOldLogs(cfg.Dir, cfg.Prefix); err != nil {
-		return nil, fmt.Errorf("archive old logs: %w", err)
+		return nil, nil, fmt.Errorf("archive old logs: %w", err)
 	}
 
 	filename := filepath.Join(cfg.Dir, cfg.Prefix+".log")
@@ -60,7 +60,7 @@ func New(cfg *Config) (*slog.Logger, error) {
 			w,
 			&slog.HandlerOptions{Level: sLevel},
 		),
-	), nil
+	), tj, nil
 }
 
 func slogLevel(l logger.LogLevel) slog.Level {
@@ -84,13 +84,19 @@ func archiveOldLogs(logDir, prefix string) error {
 		return err
 	}
 
+	current := prefix + ".log"
+
 	for _, e := range entries {
 		if e.IsDir() {
 			continue
 		}
 
 		name := e.Name()
-		if !strings.HasPrefix(name, prefix) || !strings.HasSuffix(name, ".log") {
+		if !strings.HasPrefix(name, prefix+"-") || !strings.HasSuffix(name, ".log") {
+			continue
+		}
+
+		if name == current {
 			continue
 		}
 

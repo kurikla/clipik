@@ -11,10 +11,10 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"strings"
 
 	"github.com/kurikla/clipik/internal/crypto"
 	"github.com/kurikla/clipik/pkg/dto"
+	"github.com/kurikla/clipik/pkg/protocol"
 )
 
 func (c *Client) handshake(ctx context.Context, addr string) (cipher.AEAD, dto.Format, string, error) {
@@ -27,12 +27,12 @@ func (c *Client) handshake(ctx context.Context, addr string) (cipher.AEAD, dto.F
 	cPub := cEph.PublicKey().Bytes()
 	cID := c.identity.Public().(ed25519.PublicKey)
 
-	cTrans := crypto.ClientTranscript(dto.Version, cPub, cID)
+	cTrans := crypto.ClientTranscript(protocol.Version, cPub, cID)
 	cSig := ed25519.Sign(c.identity, cTrans)
 
 	hs := dto.Handshake{
-		Protocol: dto.Protocol,
-		Version: dto.Version,
+		Protocol: protocol.Protocol,
+		Version: protocol.Version,
 		Format: c.cfg.Format,
 		ClientPub: cPub,
 		ClientID: cID,
@@ -74,12 +74,12 @@ func (c *Client) handshake(ctx context.Context, addr string) (cipher.AEAD, dto.F
 		return nil, "", "", err
 	}
 
-	if ack.Protocol != dto.Protocol {
+	if ack.Protocol != protocol.Protocol {
 		return nil, "", "", fmt.Errorf("wrong protocol: %q", ack.Protocol)
 	}
 
-	if !strings.HasPrefix(ack.Version, "1.") {
-		return nil, "", "", fmt.Errorf("unsupported version: %q", ack.Version)
+	if err := protocol.CheckVersion(ack.Version); err != nil{
+		return nil, "", "", err
 	}
 
 	if ack.Format != c.cfg.Format {

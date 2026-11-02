@@ -5,6 +5,7 @@ import (
 	"crypto/ed25519"
 	"errors"
 	"fmt"
+	"io"
 	"log/slog"
 	"net"
 	"net/http"
@@ -62,6 +63,8 @@ type Server struct {
 
 	connsMu sync.Mutex
 	conns   map[*websocket.Conn]struct{}
+
+	logCloser io.Closer
 }
 
 func New(cfg *Config) (*Server, error) {
@@ -129,7 +132,7 @@ func New(cfg *Config) (*Server, error) {
 		return nil, errors.New("server: TrimLimit must be >= 0")
 	}
 
-	lg, err := logger.New(&logger.Config{
+	lg, closer, err := logger.New(&logger.Config{
 		Dir: cfg.LogDir,
 		Level: cfg.LogLevel,
 		Prefix: cfg.LogPrefix,
@@ -150,11 +153,12 @@ func New(cfg *Config) (*Server, error) {
 		"id", fmt.Sprintf("%x", identity.Public().(ed25519.PublicKey)))
 
 	s := &Server{
-		cfg:        *cfg,
-		identity:   identity,
-		logger:     lg,
-		sessions:   newSessionStore(),
-		conns: make(map[*websocket.Conn]struct{}),
+		cfg:       *cfg,
+		identity:  identity,
+		logger:    lg,
+		sessions:  newSessionStore(),
+		conns:     make(map[*websocket.Conn]struct{}),
+		logCloser: closer,
 		allowedFormats: map[dto.Format]bool{
 			dto.FormatJSON: true,
 			dto.FormatMsgpack: true,
@@ -264,6 +268,8 @@ func (s *Server) StopWithTimeout(timeout time.Duration) error {
 			s.logger.Warn("store close", "err", cerr)
 		}
 	}
+
+	s.logCloser.Close()
 
 	return err
 }
