@@ -47,12 +47,12 @@ func getBindings(cmd *cobra.Command) []Binding {
 		&binding[string]{"IdentityPath", "identity",  identityEnv, flags.GetString, getDefaultIdentityPath},
 		&binding[string]{"LogDir",       "log-dir",   logDirEnv,   flags.GetString, getDefaultLogDir},
 		&binding[string]{"Database",     "database",  databaseEnv, flags.GetString, getDefaultDatabasePath},
-		&binding[string]{"FilesDir",		"files-dir", "",          flags.GetString, getDefaultFilesDir},
+		&binding[string]{"FilesDir",     "files-dir", "",          flags.GetString, getDefaultFilesDir},
 
 		&binding[int]{"HandshakeTimeout", "handshake-timeout", "", flags.GetInt, defaultHandshakeTimeout},
-		&binding[int]{"Port",			 "port",              "", flags.GetInt, getDefaultPort},
-		&binding[int]{"TrimInterval",	 "trim-interval",     "", flags.GetInt, defaultTrimInterval},
-		&binding[int]{"TrimLimit",		 "trim-limit",        "", flags.GetInt, defaultTrimLimit},
+		&binding[int]{"Port",			  "port",              "", flags.GetInt, getDefaultPort},
+		&binding[int]{"TrimInterval",	  "trim-interval",     "", flags.GetInt, defaultTrimInterval},
+		&binding[int]{"TrimLimit",		  "trim-limit",        "", flags.GetInt, defaultTrimLimit},
 
 		// LogLevel:   logger.LogLevel(flagOr(cmd, "log-level", flags.GetString, string(logger.LogInfo))),
 		// Interfaces: interfaces,

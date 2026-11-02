@@ -46,10 +46,10 @@ func loadConfigFile(cmd *cobra.Command) (*Config, error) {
 	bindings := getBindings(cmd)
 
 	path := (&binding[string]{
-		field: "",
-		name: "config",
-		env: configEnv,
-		get: cmd.Flags().GetString,
+		field:    "",
+		name:     "config",
+		env:      configEnv,
+		get:      cmd.Flags().GetString,
 		fallback: getDefaultConfigPath,
 	}).GetDefault()
 
