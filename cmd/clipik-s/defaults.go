@@ -150,10 +150,14 @@ func getDefaultInterfaces() ([]string, error) {
 		}
 
 		if iface.Flags&net.FlagLoopback != 0 {
+			if isLocalLoopback(iface.Name) {
+				out = append(out, iface.Name)
+			}
+
 			continue
 		}
 
-		if !isPhysical(iface.Name) || isVirtual(iface.Name) {
+		if ! isPhysical(iface.Name) || isVirtual(iface.Name) {
 			continue
 		}
 

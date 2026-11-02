@@ -14,6 +14,8 @@ var (
 		"docker", "veth", "virbr", "br-", "vmnet", "vboxnet",
 		"tun", "tap", "wg", "throne", "zt", "tailscale", "lo",
 	}
+
+	localLoopbackPrefixes []string = []string{"lo"}
 )
 
 func isPhysical(name string) bool {
@@ -22,6 +24,7 @@ func isPhysical(name string) bool {
 			return true
 		}
 	}
+
 	return false
 }
 
@@ -31,5 +34,16 @@ func isVirtual(name string) bool {
 			return true
 		}
 	}
+
+	return false
+}
+
+func isLocalLoopback(name string) bool {
+	for _, p := range localLoopbackPrefixes {
+		if strings.HasPrefix(name, p) {
+			return true
+		}
+	}
+
 	return false
 }
