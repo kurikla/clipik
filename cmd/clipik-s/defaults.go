@@ -153,26 +153,7 @@ func getDefaultInterfaces() ([]string, error) {
 			continue
 		}
 
-		addrs, err := iface.Addrs()
-
-		if err != nil {
-			continue
-		}
-
-		hasRoutable := false
-		for _, a := range addrs {
-			ipnet, ok := a.(*net.IPNet)
-			if !ok {
-				continue
-			}
-
-			if ipnet.IP.IsGlobalUnicast() && !ipnet.IP.IsLinkLocalUnicast() {
-				hasRoutable = true
-				break
-			}
-		}
-
-		if !hasRoutable {
+		if !isPhysical(iface.Name) || isVirtual(iface.Name) {
 			continue
 		}
 
