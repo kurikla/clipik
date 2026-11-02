@@ -17,11 +17,6 @@ func (o *Observer) OnFound(service model.Service) {
 	o.client.logger.Info("service found",
 		"name", service.Name,
 		"addr", fmt.Sprintf("%s:%d", service.Ip, service.Port))
-
-	addr := fmt.Sprintf("%s:%d", service.Ip, service.Port)
-	if err := o.client.connect(addr); err != nil {
-		o.client.logger.Warn("connect", "addr", addr, "err", err)
-	}
 }
 
 func (o *Observer) OnAccept(service model.Service) {

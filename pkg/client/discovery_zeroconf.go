@@ -75,6 +75,7 @@ func (d *ZeroconfDiscoverer) browse(ctx context.Context, observer *Observer) {
 	}
 
 	seen := make(map[string]struct{})
+
 	for {
 		select {
 		case <-ctx.Done():
@@ -84,6 +85,7 @@ func (d *ZeroconfDiscoverer) browse(ctx context.Context, observer *Observer) {
 			if !ok {
 				return
 			}
+
 			d.handleEntry(e, observer, seen)
 		}
 	}
