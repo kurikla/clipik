@@ -20,19 +20,19 @@ func getConfigDir() string {
 			appData = home
 		}
 
-		return filepath.Join(appData, "ClipikS")
+		return filepath.Join(appData, "Clipik")
 	case "darwin":
 		home, err := os.UserHomeDir()
 		if err != nil {
 			return ""
 		}
-		return filepath.Join(home, "Library", "Application Support", "ClipikS")
+		return filepath.Join(home, "Library", "Application Support", "Clipik")
 	default: // Linux, freebsd, openbsd, netbsd, ...
 		home, err := os.UserHomeDir()
 		if err != nil {
 			return ""
 		}
-		return filepath.Join(home, ".config", "clipik-s")
+		return filepath.Join(home, ".config", "clipik")
 	}
 }
 

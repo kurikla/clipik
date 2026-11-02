@@ -13,6 +13,10 @@ import (
 
 type configKey struct{}
 
+type FileConfig struct {
+	Cfg Config `yaml:"server"`
+}
+
 type Config struct {
 	ConfigPath       string          `yaml:"-"` // не сохраняется в файл
 	IdentityPath	 string			 `yaml:"identity"`
@@ -30,11 +34,13 @@ type Config struct {
 }
 
 func saveConfigFile(cfg *Config) error {
+	fc := FileConfig{Cfg: *cfg}
+
 	if err := os.MkdirAll(filepath.Dir(cfg.ConfigPath), 0o755); err != nil {
 		return fmt.Errorf("mkdir: %w", err)
 	}
 
-	b, err := yaml.Marshal(cfg)
+	b, err := yaml.Marshal(fc)
 	if err != nil {
 		return fmt.Errorf("marshal: %w", err)
 	}
@@ -60,9 +66,13 @@ func loadConfigFile(cmd *cobra.Command) (*Config, error) {
 	b, err := os.ReadFile(path)
 	switch {
 	case err == nil:
-		if err := yaml.Unmarshal(b, cfg); err != nil {
+		var fc FileConfig
+
+		if err := yaml.Unmarshal(b, &fc); err != nil {
 			return nil, fmt.Errorf("parse config: %w", err)
 		}
+
+		cfg = &fc.Cfg
 
 		flags := cmd.Flags()
 		for _, b := range bindings {
