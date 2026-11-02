@@ -11,7 +11,7 @@ type ZeroconfDiscoverer struct {
 	srv *zeroconf.Server
 }
 
-func (d ZeroconfDiscoverer) Register(instance, service string, port int, txt []string, ifaces []string) error {
+func (d *ZeroconfDiscoverer) Register(instance, service string, port int, txt []string, ifaces []string) error {
 	nets :=  make([]net.Interface, 0, len(ifaces))
 
 	for _, name := range ifaces {
