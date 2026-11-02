@@ -54,11 +54,11 @@ var rootCmd = &cobra.Command{
 }
 
 func init() {
-	rootCmd.PersistentFlags().String("config",    getConfigPath(),   "path to config file")
-	rootCmd.PersistentFlags().String("identity",  getIdentityPath(), "path to identity file")
+	rootCmd.PersistentFlags().String("config",    getDefaultConfigPath(),   "path to config file")
+	rootCmd.PersistentFlags().String("identity",  getDefaultIdentityPath(), "path to identity file")
 	rootCmd.PersistentFlags().String("log-level", "info",            "log level")
-	rootCmd.PersistentFlags().String("log-dir",   getLogDir(),       "path to log directory")
-	rootCmd.PersistentFlags().String("database",  getDatabasePath(), "path to sqlite3 database file")
+	rootCmd.PersistentFlags().String("log-dir",   getDefaultLogDir(),       "path to log directory")
+	rootCmd.PersistentFlags().String("database",  getDefaultDatabasePath(), "path to sqlite3 database file")
 
 	rootCmd.PersistentFlags().Bool("logstdout", defaultLogStdout, "enable logger stdout output")
 

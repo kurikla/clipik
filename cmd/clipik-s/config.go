@@ -3,7 +3,6 @@ package main
 import (
 	"errors"
 	"fmt"
-	"net"
 	"os"
 	"path/filepath"
 
@@ -30,78 +29,6 @@ type Config struct {
 	Interfaces       []string        `yaml:"interfaces"`
 }
 
-func getDefaultInterfaces() ([]string, error) {
-	ifaces, err := net.Interfaces()
-
-	if err != nil {
-		return nil, err
-	}
-
-	var out []string
-	for _, iface := range ifaces {
-		if iface.Flags&net.FlagUp == 0 {
-			continue
-		}
-
-		if iface.Flags&net.FlagLoopback != 0 {
-			continue
-		}
-
-		addrs, err := iface.Addrs()
-
-		if err != nil {
-			continue
-		}
-
-		hasRoutable := false
-		for _, a := range addrs {
-			ipnet, ok := a.(*net.IPNet)
-			if !ok {
-				continue
-			}
-
-			if ipnet.IP.IsGlobalUnicast() && !ipnet.IP.IsLinkLocalUnicast() {
-				hasRoutable = true
-				break
-			}
-		}
-
-		if !hasRoutable {
-			continue
-		}
-
-		out = append(out, iface.Name)
-	}
-
-	return out, nil
-}
-
-// func defaultConfig(cmd *cobra.Command) (*Config, error) {
-//	flags := cmd.Flags()
-//	interfaces, err := getDefaultInterfaces()
-
-//	if err != nil {
-//		return nil, err
-//	}
-
-//	return &Config{
-//		IdentityPath:	  flagOr(cmd, "identity",          flags.GetString, getIdentityPath),
-//		LogDir:           flagOr(cmd, "log-dir",           flags.GetString, getLogDir),
-//		Database:         flagOr(cmd, "database",          flags.GetString, getDatabasePath),
-//		LogStdout:		  flagOr(cmd, "logstdout",		   flags.GetBool,   defaultLogStdout),
-//		SizeLimit:        flagOr(cmd, "size-limit",        flags.GetInt64,  defaultSizeLimit),
-//		HandshakeTimeout: flagOr(cmd, "handshake-timeout", flags.GetInt,    defaultHandshakeTimeout),
-//		Port:             flagOr(cmd, "port",              flags.GetInt,    getDefaultPort),
-//		TrimInterval:     flagOr(cmd, "trim-interval",     flags.GetInt,    defaultTrimInterval),
-//		TrimLimit:        flagOr(cmd, "trim-limit",        flags.GetInt,    defaultTrimLimit),
-//		FilesDir:		  flagOr(cmd, "files-dir",         flags.GetString, getFilesDir),
-
-//		LogLevel:   logger.LogLevel(flagOr(cmd, "log-level", flags.GetString, string(logger.LogInfo))),
-//		Interfaces: interfaces,
-//	}, nil
-// }
-
-
 func saveConfigFile(cfg *Config) error {
 	if err := os.MkdirAll(filepath.Dir(cfg.ConfigPath), 0o755); err != nil {
 		return fmt.Errorf("mkdir: %w", err)
@@ -123,7 +50,7 @@ func loadConfigFile(cmd *cobra.Command) (*Config, error) {
 		name: "config",
 		env: configEnv,
 		get: cmd.Flags().GetString,
-		fallback: getConfigPath,
+		fallback: getDefaultConfigPath,
 	}).GetDefault()
 
 	toSave := false
@@ -149,6 +76,14 @@ func loadConfigFile(cmd *cobra.Command) (*Config, error) {
 				return nil, fmt.Errorf("default %s: %w", b.Name(), err)
 			}
 		}
+
+		interfaces, err := getDefaultInterfaces()
+
+		if err != nil {
+			return nil, err
+		}
+
+		cfg.Interfaces = interfaces
 
 		toSave = true
 	default:

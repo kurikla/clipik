@@ -3,32 +3,11 @@ package main
 import (
 	"errors"
 	"fmt"
-	"net"
-	"os"
 	"time"
 
 	"github.com/kurikla/clipik/pkg/server"
 	"github.com/spf13/cobra"
 )
-
-var (
-	defaultHandshakeTimeout int = 7
-	defaultSizeLimit int64 = 64 << 20
-	defaultTrimInterval int = 30
-	defaultTrimLimit int = 3000
-)
-
-func getDefaultPort() int {
-	ln, err := net.Listen("tcp", ":0")
-
-	if err != nil {
-		fmt.Println(os.Stderr, err)
-		return 8765
-	}
-
-	defer ln.Close()
-	return ln.Addr().(*net.TCPAddr).Port
-}
 
 var serveCmd = &cobra.Command{
 	Use: "serve",
@@ -111,5 +90,5 @@ func init() {
 	serveCmd.Flags().Int("trim-interval",     defaultTrimInterval,     "interval trim database history")
 	serveCmd.Flags().Int("trim-limit",        defaultTrimLimit,        "trim history limit")
 
-	serveCmd.Flags().String("files-dir", getFilesDir(), "path to files directory")
+	serveCmd.Flags().String("files-dir", getDefaultFilesDir(), "path to files directory")
 }

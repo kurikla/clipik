@@ -44,10 +44,10 @@ func getBindings(cmd *cobra.Command) []Binding {
 
 		&binding[logger.LogLevel]{"LogLevel", "log-level", logLevelEnv, getLogLevel, logger.LogInfo},
 
-		&binding[string]{"IdentityPath", "identity",  identityEnv, flags.GetString, getIdentityPath},
-		&binding[string]{"LogDir",       "log-dir",   logDirEnv,   flags.GetString, getLogDir},
-		&binding[string]{"Database",     "database",  databaseEnv, flags.GetString, getDatabasePath},
-		&binding[string]{"FilesDir",		"files-dir", "",          flags.GetString, getFilesDir},
+		&binding[string]{"IdentityPath", "identity",  identityEnv, flags.GetString, getDefaultIdentityPath},
+		&binding[string]{"LogDir",       "log-dir",   logDirEnv,   flags.GetString, getDefaultLogDir},
+		&binding[string]{"Database",     "database",  databaseEnv, flags.GetString, getDefaultDatabasePath},
+		&binding[string]{"FilesDir",		"files-dir", "",          flags.GetString, getDefaultFilesDir},
 
 		&binding[int]{"HandshakeTimeout", "handshake-timeout", "", flags.GetInt, defaultHandshakeTimeout},
 		&binding[int]{"Port",			 "port",              "", flags.GetInt, getDefaultPort},
